@@ -15,7 +15,7 @@ def exact_change(user_total):
     return dollar, quarter, dime, nickel, penny
 
 
-def coin_count():
+def main():
     coins = int(input())
     num_dollars, num_quarters, num_dimes, num_nickels, num_pennies = exact_change(coins)
     if coins <= 0:
@@ -46,4 +46,5 @@ def coin_count():
         elif num_pennies > 1:
             print('%d pennies' % num_pennies)
 
-coin_count()
+if __name__ == '__main__':
+    main()
