@@ -1,2 +1,2 @@
-# cis2348
-Files for CIS 2348.
+# cis2348 homework 2
+This folder contains coding problem 2, as well as the required zylab files.
