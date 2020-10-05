@@ -17,4 +17,3 @@ with open(user_file, 'r') as csv_file:
 
 for key in frequency_dict.keys():
     print(key + ' ' + str(frequency_dict[key]))
-
