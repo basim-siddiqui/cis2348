@@ -2,6 +2,7 @@
 # PSID: 1517778
 
 
+
 #class from lab 10.17
 class ItemToPurchase:
     def __init__(self, item_name = 'none', item_price = 0, item_quantity = 0, item_description = 'none'):
@@ -15,6 +16,7 @@ class ItemToPurchase:
 
     def print_item_description(self):
         print(self.item_name + ": " + self.item_description)
+
 
 
 #new class
@@ -103,6 +105,9 @@ class ShoppingCart:
             print('{} {} @ ${} = ${}'.format(items.item_name, items.item_quantity, items.item_price, (items.item_quantity * items.item_price)), end='\n')
             tc += (items.item_quantity * items.item_price)
         print('\nTotal: ${}'.format(tc), end='\n')
+
+
+
 
 def print_menu(ShoppingCart):
     customers_cart = new_cart
