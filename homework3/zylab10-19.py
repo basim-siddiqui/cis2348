@@ -2,7 +2,6 @@
 # PSID: 1517778
 
 
-
 #class from lab 10.17
 class ItemToPurchase:
     def __init__(self, item_name = 'none', item_price = 0, item_quantity = 0, item_description = 'none'):
@@ -18,7 +17,6 @@ class ItemToPurchase:
         print(self.item_name + ": " + self.item_description)
 
 
-
 #new class
 class ShoppingCart:
     def __init__(self, customer_name = 'none', current_date = 'January 1, 2016', cart_items = []):
@@ -26,22 +24,15 @@ class ShoppingCart:
         self.current_date = current_date
         self.cart_items = cart_items
 
-    def add_item(self, string):
-        print('ADD ITEM TO CART')
-        item_name = input("Enter the item name:\n")
-        item_description = input("Enter the item description:\n")
-        item_price = int(input("Enter the item price:\n"))
-        item_quantity = int(input("Enter the item quantity:\n"))
-        self.cart_items.append(ItemToPurchase(item_name, item_price, item_quantity, item_description))
+    def add_item(self, new_item):
+        self.cart_items.append(new_item)
 
     def remove_item(self):
         print('REMOVE ITEM FROM CART')
-        i = 0
         remove_name = input("Enter name of item to remove:\n")
         for items in self.cart_items:
             if items.item_name == remove_name:
-                del self.cart_items[i]
-                i += 1
+                self.cart_items.remove(items)
                 iteration = True
                 break
             else:
@@ -106,9 +97,6 @@ class ShoppingCart:
             tc += (items.item_quantity * items.item_price)
         print('\nTotal: ${}'.format(tc), end='\n')
 
-
-
-
 def print_menu(ShoppingCart):
     customers_cart = new_cart
     string = ''
@@ -127,7 +115,13 @@ def print_menu(ShoppingCart):
         while (command != 'a' and command != 'o' and command != 'i' and command != 'r' and command != 'c' and command != 'q'):
             command = input('Choose an option:\n')
         if (command == 'a'):
-            customers_cart.add_item(string)
+            print('ADD ITEM TO CART')
+            item_name = input("Enter the item name:\n")
+            item_description = input("Enter the item description:\n")
+            item_price = int(input("Enter the item price:\n"))
+            item_quantity = int(input("Enter the item quantity:\n"))
+            new_item = ItemToPurchase(item_name, item_price, item_quantity, item_description)
+            customers_cart.add_item(new_item)
         if (command == 'o'):
             customers_cart.output_shopping_cart()
         if (command == 'i'):
