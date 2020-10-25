@@ -2,7 +2,6 @@
 # PSID: 1517778
 
 team_dictionary = {}
-i = 1
 for i in range(1, 6):
     jersey_num = int(input("Enter player {}'s jersey number:\n".format(i)))
     rating = int(input("Enter player {}'s rating:\n".format(i)))
