@@ -2,12 +2,10 @@
 # PSID: 1517778
 
 # ~ import csv module for csv file functionality, import time and datetime for past service dates file, import copy for duplicating lists
-# ~ import operator for sorting the past service dates sublists
 import csv
 import copy
 import time
 from datetime import datetime
-import operator
 
 
 # ~ each entry in the full_inventory_list is turned into a sublist and appended to a new list to separate them by rows
@@ -35,6 +33,7 @@ def sort_past_dates(old_dates):
     l = len(old_dates)
     for i in range(0, l):
         for j in range(0, l - i - 1):
+            # ~ strptime used again for comparing past service dates
             if datetime.strptime(old_dates[j][4], "%m/%d/%Y") > datetime.strptime(old_dates[j + 1][4], "%m/%d/%Y"):
                 tempo = old_dates[j]
                 old_dates[j] = old_dates[j + 1]
@@ -44,14 +43,14 @@ def sort_past_dates(old_dates):
 
 # ~ reads manufacturer list csv file
 with open('ManufacturerList.csv', 'r') as csvfile:
-    #~seperates fields by comma
+    # ~ seperates fields by comma
     manufacturer_list = csv.reader(csvfile, delimiter = ",")
-    #~initialize lists based on input fields
+    # ~ initialize lists based on input fields, same operation done for pricelist and servicedateslist csv files
     manufacturer_ids = []
     manufacturer_brands = []
     manufacturer_type = []
     damage_indicator = []
-    #~append to lists by row
+    # ~ append to lists by row, same operation done for pricelist and servicedateslist csv files
     for row in manufacturer_list:
         manufacturer_ids.append(row[0])
         manufacturer_brands.append(row[1])
@@ -59,16 +58,16 @@ with open('ManufacturerList.csv', 'r') as csvfile:
         damage_indicator.append(row[3])
 
 
-
+# ~ reads price list csv file
 with open('PriceList.csv', 'r') as csvfile:
     price_list = csv.reader(csvfile, delimiter = ",")
     price_ids = []
     price_numbers = []
     for row in price_list:
         price_ids.append(row[0])
-        price_numbers.append(row[1])
+        price_numbers.append(int(row[1]))
 
-
+# ~ reads service dates csv file
 with open('ServiceDatesList.csv', 'r') as csvfile:
     service_date_list = csv.reader(csvfile, delimiter = ",")
     service_ids = []
@@ -78,7 +77,7 @@ with open('ServiceDatesList.csv', 'r') as csvfile:
         service_dates.append(row[1])
 
 
- # ~ dictionaries from split files based on respective item ID
+ # ~ dictionaries created from lists by their respective item ID
 brand_dict = dict(zip(manufacturer_ids, manufacturer_brands))
 type_dict = dict(zip(manufacturer_ids, manufacturer_type))
 damage_dict = dict(zip(manufacturer_ids, damage_indicator))
@@ -133,16 +132,18 @@ towers = []
 others = []
 type_rows = copy.deepcopy(inventory_rows)
 
+# ~ iterates through copied inventory_rows list to append sublists of each item type to its respective item list
 for entry in range(len(type_rows)):
-    if type_rows[entry][2] == "laptop" or type_rows[entry][2] == "Laptop":
+    if type_rows[entry][2] == "laptop":
         laptops.append(type_rows[entry])
-    elif type_rows[entry][2] == "phone" or type_rows[entry][2] == "Phone":
+    elif type_rows[entry][2] == "phone":
         phones.append(type_rows[entry])
-    elif type_rows[entry][2] == "tower" or type_rows[entry][2] == "Tower":
+    elif type_rows[entry][2] == "tower":
         towers.append(type_rows[entry])
     else:
         others.append(type_rows[entry])
 
+# ~ removes the item element from each sublist
 for laptop in laptops:
     laptop.remove("laptop")
 for phone in phones:
@@ -176,10 +177,12 @@ if len(others) > 0:
         writer = csv.writer(other_file)
         writer.writerows(others)
 
-# ~ iterates through inventory_rows and determines if the date listed has passed
+# ~ iterates through copied inventory_rows list and determines if the date listed has passed to append to past_dates list
 past_dates = []
+# ~ strftime method used from imported time module to fetch date when program runs
 today = time.strftime("%m/%d/%Y")
 str(today)
+# ~ strptime method from imported datetime module to format today's date for comparison with service dates, used again for service dates in the for loop
 today = datetime.strptime(today, "%m/%d/%Y")
 date_rows = copy.deepcopy(inventory_rows)
 for entry in range(len(date_rows)):
@@ -189,9 +192,29 @@ for entry in range(len(date_rows)):
     if serv_date < today:
         past_dates.append(date_rows[entry])
 
+# ~ call function to sort the past service dates from oldest to most recent
 past_dates_inventory = sort_past_dates(past_dates)
 
 # ~ csv file of past service dates is written
 with open('PastServiceDateInventory.csv', 'w', newline='') as dates_file:
         writer = csv.writer(dates_file)
         writer.writerows(past_dates_inventory)
+
+# ~ create list of only damaged goods
+damaged = []
+damage_rows = copy.deepcopy(inventory_rows)
+for entry in range(len(damage_rows)):
+    if damage_rows[entry][5] == "damaged":
+        damaged.append(damage_rows[entry])
+
+# ~ removes the damaged indicator element from each sublist
+for damaged_item in damaged:
+    damaged_item.remove("damaged")
+
+# ~ sort damaged items list by order of most expensive to least expensive
+damaged.sort(key = lambda x: x[3], reverse=True)
+
+# ~ csv file of damaged inventory is written
+with open('DamagedInventory.csv', 'w', newline='') as damaged_file:
+    writer = csv.writer(damaged_file)
+    writer.writerows(damaged)
