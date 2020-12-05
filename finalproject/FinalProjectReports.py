@@ -1,6 +1,7 @@
 # Basim Siddiqui
 # PSID: 1517778
 
+
 # ~ import csv module for csv file functionality, import time and datetime for past service dates file, import copy for duplicating lists
 import csv
 import copy
@@ -27,6 +28,7 @@ def sort_inventory_rows(inv_list):
                 inv_rows[j] = inv_rows[j + 1]
                 inv_rows[j + 1] = tempo
     return inv_rows
+
 
 # ~ sorts the past_dates list from oldest to newest date
 def sort_past_dates(old_dates):
@@ -56,7 +58,6 @@ with open('ManufacturerList.csv', 'r') as csvfile:
         manufacturer_brands.append(row[1])
         manufacturer_type.append(row[2])
         damage_indicator.append(row[3])
-
 
 # ~ reads price list csv file
 with open('PriceList.csv', 'r') as csvfile:
@@ -106,7 +107,6 @@ for ids in range(len(full_inventory_list)):
 for prices in price_dict:
     if price_dict[prices] not in full_inventory_list:
         full_inventory_list.insert(-1, price_dict[prices])
-
 for ids in range(len(full_inventory_list)):
     for serviceID in sorted(service_dict):
         if serviceID == full_inventory_list[ids]:
@@ -117,29 +117,28 @@ for dates in service_dict:
 
 # ~ calls function to separate full_inventory_list into sublists and sort by manufacturer name
 inventory_rows = sort_inventory_rows(full_inventory_list)
-
-
 # ~ each sublist is written as a row into a FullInventory.csv file
 with open('FullInventory.csv', 'w', newline='') as inv_file:
     writer = csv.writer(inv_file)
     writer.writerows(inventory_rows)
 
+
 # ~ new lists are made to be written to corresponding item type files
 # ~ deepcopy of inventory_rows to keep original list unmodified
-
 type_rows = copy.deepcopy(inventory_rows)
 types = []
 type_items = {}
 
+# ~ dictionary key created for each item type from input files
 for entry in range(len(type_rows)):
     if type_rows[entry][2] not in types:
         type_items[type_rows[entry][2]] = []
-
+# ~ each item is assigned as a sublist element to its corresponding dictionary key
 for key in type_items:
     for entry in range(len(type_rows)):
         if type_rows[entry][2] == key:
             type_items[key].append(type_rows[entry])
-
+# ~ a csv file is created for each item type with items of the same type
 for key, value in type_items.items():
     with open('{}Inventory.csv'.format(key), 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -163,11 +162,11 @@ for entry in range(len(date_rows)):
 
 # ~ call function to sort the past service dates from oldest to most recent
 past_dates_inventory = sort_past_dates(past_dates)
-
 # ~ csv file of past service dates is written
 with open('PastServiceDateInventory.csv', 'w', newline='') as dates_file:
         writer = csv.writer(dates_file)
         writer.writerows(past_dates_inventory)
+
 
 # ~ create list of only damaged goods
 damaged = []
