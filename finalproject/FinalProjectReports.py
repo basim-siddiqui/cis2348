@@ -126,56 +126,25 @@ with open('FullInventory.csv', 'w', newline='') as inv_file:
 
 # ~ new lists are made to be written to corresponding item type files
 # ~ deepcopy of inventory_rows to keep original list unmodified
-laptops = []
-phones = []
-towers = []
-others = []
+
 type_rows = copy.deepcopy(inventory_rows)
+types = []
+type_items = {}
 
-# ~ iterates through copied inventory_rows list to append sublists of each item type to its respective item list
 for entry in range(len(type_rows)):
-    if type_rows[entry][2] == "laptop":
-        laptops.append(type_rows[entry])
-    elif type_rows[entry][2] == "phone":
-        phones.append(type_rows[entry])
-    elif type_rows[entry][2] == "tower":
-        towers.append(type_rows[entry])
-    else:
-        others.append(type_rows[entry])
+    if type_rows[entry][2] not in types:
+        type_items[type_rows[entry][2]] = []
 
-# ~ removes the item element from each sublist
-for laptop in laptops:
-    laptop.remove("laptop")
-for phone in phones:
-    phone.remove("phone")
-for tower in towers:
-    tower.remove("tower")
-for other in others:
-    del other[2]
+for key in type_items:
+    for entry in range(len(type_rows)):
+        if type_rows[entry][2] == key:
+            type_items[key].append(type_rows[entry])
 
-# ~ sorts these lists by the item ID
-laptops.sort()
-phones.sort()
-towers.sort()
-others.sort()
+for key, value in type_items.items():
+    with open('{}Inventory.csv'.format(key), 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerows(value)
 
-# ~ if the item type lists have elements within them, csv files are output for the respective item type
-if len(laptops) > 0:
-    with open('LaptopInventory.csv', 'w', newline='') as laptop_file:
-        writer = csv.writer(laptop_file)
-        writer.writerows(laptops)
-if len(phones) > 0:
-    with open('PhoneInventory.csv', 'w', newline='') as phone_file:
-        writer = csv.writer(phone_file)
-        writer.writerows(phones)
-if len(towers) > 0:
-    with open('TowerInventory.csv', 'w', newline='') as tower_file:
-        writer = csv.writer(tower_file)
-        writer.writerows(towers)
-if len(others) > 0:
-    with open('OtherInventory.csv', 'w', newline='') as other_file:
-        writer = csv.writer(other_file)
-        writer.writerows(others)
 
 # ~ iterates through copied inventory_rows list and determines if the date listed has passed to append to past_dates list
 past_dates = []
