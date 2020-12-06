@@ -2,6 +2,7 @@
 # PSID: 1517778
 
 import csv
+import copy
 
 # ~ function removes "\n" from each line, splits each line with a comma delimiter, and appends it to a new list
 def make_sublists(inv_list):
@@ -16,11 +17,17 @@ def make_sublists(inv_list):
         inventory_lines.append(removed_space)
     return inventory_lines
 
-def item_search(manufacturer, item_list, past_list):
+def item_search(manufacturer, item_type, inventory, past_list):
     search_results = []
-    for item in range(len(item_list)):
-        if str(manufacturer) in str(item_list[item][1]):
-            search_results.append(item_list[item])
+    for item in range(len(inventory)):
+        if inventory[item][1] in manufacturer and inventory[item][2] in str(item_type):
+            search_results.append(inventory[item])
+            for date in range(len(past_list)):
+                if "damaged" in inventory[item][5] or inventory[item][4] in past_list[date][4]:
+                    search_results.pop()
+                    break
+    if len(search_results) == 0:
+        search_results = 'No such item in inventory'
     return search_results
 
 
@@ -30,21 +37,24 @@ with open('FullInventory.csv', 'r') as csvfile:
     inventory_list = csvfile.readlines()
     inventory_lists = make_sublists(inventory_list)
 
-with open('LaptopInventory.csv', 'r') as csvfile:
-    laptops_list = csvfile.readlines()
-    laptop_lists = make_sublists(laptops_list)
-
-with open('PhoneInventory.csv', 'r') as csvfile:
-    phones_list = csvfile.readlines()
-    phone_lists = make_sublists(phones_list)
-
-with open('TowerInventory.csv', 'r') as csvfile:
-    towers_list = csvfile.readlines()
-    tower_lists = make_sublists(towers_list)
-
 with open('PastServiceDateInventory.csv', 'r') as csvfile:
     pastdates_list = csvfile.readlines()
     past_service_lists = make_sublists(pastdates_list)
+
+
+# ~ dictionary key created for each item type from input files
+type_rows = copy.deepcopy(inventory_lists)
+types = []
+type_items = {}
+for entry in range(len(type_rows)):
+    if type_rows[entry][2] not in types:
+        type_items[type_rows[entry][2]] = []
+# ~ each item is assigned as a sublist element to its corresponding dictionary key
+for key in type_items:
+    for entry in range(len(type_rows)):
+        if type_rows[entry][2] == key:
+            type_items[key].append(type_rows[entry])
+
 
 # ~ loop asks for user input to begin query search; if "q" is entered, the programs ends
 search_prompt = ''
@@ -55,46 +65,16 @@ while search_prompt != 'q':
     if search_prompt == 'q':
         break
 
-    if 'Apple' in search_prompt or 'apple' in search_prompt:
-        if 'phone' in search_prompt:
-            apple_phone = item_search('Apple', phone_lists, past_service_lists)
-            print(apple_phone)
-        if 'laptop' in search_prompt or 'computer' in search_prompt:
-            apple_laptop = item_search('Apple', laptop_lists, past_service_lists)
-            print(apple_laptop)
-        if 'tower' in search_prompt:
-            apple_tower = item_search('Apple', tower_lists, past_service_lists)
-            print(apple_tower)
+    search_prompt = search_prompt.split()
 
-    if 'Samsung' in search_prompt or 'samsung' in search_prompt:
-        if 'phone' in search_prompt:
-            samsung_phone = item_search('Samsung', phone_lists, past_service_lists)
-            print(samsung_phone)
-        if 'laptop' in search_prompt or 'computer' in search_prompt:
-            samsung_laptop = item_search('Samsung', laptop_lists, past_service_lists)
-            print(samsung_laptop)
-        if 'tower' in search_prompt:
-            samsung_tower = item_search('Samsung', tower_lists, past_service_lists)
-            print(samsung_tower)
+    for key, values in type_items.items():
+        if key in search_prompt:
+            for sublist in range(len(values)):
+                for word in range(len(search_prompt)):
+                    if search_prompt[word] in values[sublist][1]:
+                        found_items = item_search(values[sublist][1], key, inventory_lists, past_service_lists)
+                        print(found_items)
+        else:
+            print("No such item in inventory")
+            break
 
-    if 'Dell' in search_prompt or 'dell' in search_prompt:
-        if 'phone' in search_prompt:
-            dell_phone = item_search('Dell', phone_lists, past_service_lists)
-            print(dell_phone)
-        if 'laptop' in search_prompt or 'computer' in search_prompt:
-            dell_laptop = item_search('Dell', laptop_lists, past_service_lists)
-            print(dell_laptop)
-        if 'tower' in search_prompt:
-            dell_tower = item_search('Dell', tower_lists, past_service_lists)
-            print(dell_tower)
-
-    if 'Lenovo' in search_prompt or 'lenovo' in search_prompt:
-        if 'phone' in search_prompt:
-            lenovo_phone = item_search('Lenovo', phone_lists, past_service_lists)
-            print(lenovo_phone)
-        if 'laptop' in search_prompt or 'computer' in search_prompt:
-            lenovo_laptop = item_search('Lenovo', laptop_lists, past_service_lists)
-            print(lenovo_laptop)
-        if 'tower' in search_prompt:
-            lenovo_tower = item_search('Lenovo', tower_lists, past_service_lists)
-            print(lenovo_tower)
