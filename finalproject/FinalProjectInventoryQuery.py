@@ -86,9 +86,10 @@ while search_prompt != 'q':
     # ~ if the user searches for a manufacturer or item type that isn't carried or searches for multiple item types, this statement is made
     if len(found_items) == 0:
         found_items = 'No such item in inventory'
+        print(found_items)
 
     # ~ if items are found within the inventory, the loop iterates for each item and finds the most expensive one
-    if len(found_items) > 0:
+    elif len(found_items) > 0:
         max_price = [0, 0, 0, 0, 0, 0]
         for results in range(len(found_items)):
             if int(found_items[results][3]) > int(max_price[3]):
