@@ -17,11 +17,14 @@ def make_sublists(inv_list):
         inventory_lines.append(removed_space)
     return inventory_lines
 
+# ~ checks to see if user's input matches with existing manufacturer and item type within the inventory, returns results
 def item_search(manufacturer, item_type, inventory, past_list):
     search_results = []
+    # ~ appends item to results list if there is an item of the same type and manufacturer as inputted
     for item in range(len(inventory)):
         if inventory[item][1] in manufacturer and inventory[item][2] in str(item_type):
             search_results.append(inventory[item])
+            # ~ if the item matches the search words but is damaged or past service date, it's removed from the serach results
             for date in range(len(past_list)):
                 if "damaged" in inventory[item][5] or inventory[item][4] in past_list[date][4]:
                     search_results.pop()
@@ -49,7 +52,7 @@ type_items = {}
 for entry in range(len(type_rows)):
     if type_rows[entry][2] not in types:
         type_items[type_rows[entry][2]] = []
-# ~ each item is assigned as a sublist element to its corresponding dictionary key
+# ~ each item row is assigned as a sublist element to its corresponding dictionary key (the item type)
 for key in type_items:
     for entry in range(len(type_rows)):
         if type_rows[entry][2] == key:
@@ -65,15 +68,22 @@ while search_prompt != 'q':
     if search_prompt == 'q':
         break
 
+# ~ splits user's input into individual words and stores it as a list
     search_prompt = search_prompt.split()
-
+# ~ iterates through the item_type dictionary to see if the user inputted a valid item type
     for key, values in type_items.items():
         if key in search_prompt:
+            # ~ iterates through sublists in a specific dictionary
             for sublist in range(len(values)):
+                # ~ iterates through the user's entered words
                 for word in range(len(search_prompt)):
+                    # ~ checks to see if the user entered a manufacturer that is carried in inventory
                     if search_prompt[word] in values[sublist][1]:
+                        # ~ calls search_items function for finding the appropriate item
                         found_items = item_search(values[sublist][1], key, inventory_lists, past_service_lists)
                         print(found_items)
+
+# ~ if the user searches for a manufacturer that isn't carried, this statement is made
         else:
             print("No such item in inventory")
             break
