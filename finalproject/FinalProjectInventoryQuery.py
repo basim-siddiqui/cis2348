@@ -24,13 +24,11 @@ def item_search(manufacturer, item_type, inventory, past_list):
     for item in range(len(inventory)):
         if inventory[item][1] in manufacturer and inventory[item][2] in str(item_type):
             search_results.append(inventory[item])
-            # ~ if the item matches the search words but is damaged or past service date, it's removed from the serach results
+            # ~ if the item matches the search words but is damaged or past service date, it's removed from the search results
             for date in range(len(past_list)):
                 if "damaged" in inventory[item][5] or inventory[item][4] in past_list[date][4]:
                     search_results.pop()
                     break
-    if len(search_results) == 0:
-        search_results = 'No such item in inventory'
     return search_results
 
 
@@ -64,12 +62,14 @@ search_prompt = ''
 while search_prompt != 'q':
     print('\nSEARCH MENU\n'
           'q - Quit')
+    # ~ asks user for BOTH manufacturer and item type; extra words are ignored
     search_prompt = input('Please enter the manufacturer and item type:\n')
     if search_prompt == 'q':
         break
 
 # ~ splits user's input into individual words and stores it as a list
     search_prompt = search_prompt.split()
+    found_items = []
 # ~ iterates through the item_type dictionary to see if the user inputted a valid item type
     for key, values in type_items.items():
         if key in search_prompt:
@@ -81,10 +81,17 @@ while search_prompt != 'q':
                     if search_prompt[word] in values[sublist][1]:
                         # ~ calls search_items function for finding the appropriate item
                         found_items = item_search(values[sublist][1], key, inventory_lists, past_service_lists)
-                        print(found_items)
+                        break
 
-# ~ if the user searches for a manufacturer that isn't carried, this statement is made
-        else:
-            print("No such item in inventory")
-            break
+    # ~ if the user searches for a manufacturer or item type that isn't carried or searches for multiple item types, this statement is made
+    if len(found_items) == 0:
+        found_items = 'No such item in inventory'
 
+    # ~ if items are found within the inventory, the loop iterates for each item and finds the most expensive one
+    if len(found_items) > 0:
+        max_price = [0, 0, 0, 0, 0, 0]
+        for results in range(len(found_items)):
+            if int(found_items[results][3]) > int(max_price[3]):
+                max_price = found_items[results]
+        # ~ outputs the item for the user in this format
+        print("Your item is:", max_price[0], max_price[1], max_price[2], '${}'.format(max_price[3]))
