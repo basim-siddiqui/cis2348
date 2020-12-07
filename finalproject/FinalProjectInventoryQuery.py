@@ -31,6 +31,29 @@ def item_search(manufacturer, item_type, inventory, past_list):
                     break
     return search_results
 
+# ~ iterates through inventory list to find the same item type the user inputted from a different manufacturer
+def item_recommendation(brand, item_type, price, inventory, past_list):
+    rec_results = []
+    same_type = []
+    item_price = copy.deepcopy(price)
+    min = price
+    for entry in range(len(inventory)):
+        if inventory[entry][2] == item_type:
+            if inventory[entry][1] != brand:
+                same_type.append(inventory[entry])
+                # ~ if the item matches the search words but is damaged or past service date, it's removed from the same item type list
+                for date in range(len(past_list)):
+                    if "damaged" in inventory[entry][5] or inventory[entry][4] in past_list[date][4]:
+                        same_type.pop()
+                        break
+    # ~ if the same_type list has elements, the loop assigns the item with the closest price to the search result to rec_results
+    if len(same_type) > 0:
+        for items in range(len(same_type)):
+            price_diff = abs(int(item_price) - int(same_type[items][3]))
+            if price_diff < int(min):
+                min = price_diff
+                rec_results = same_type[items]
+    return rec_results
 
 
 # ~ reads inventory csv files by each line, each file opened calls make_sublists
@@ -96,3 +119,9 @@ while search_prompt != 'q':
                 max_price = found_items[results]
         # ~ outputs the item for the user in this format
         print("Your item is:", max_price[0], max_price[1], max_price[2], '${}'.format(max_price[3]))
+
+        # ~ calls item recommendation function to search for items of the same type from another manufacturer
+        consideration = item_recommendation(max_price[1], max_price[2], max_price[3], inventory_lists, past_service_lists)
+        # ~ if the function returns a list with an item recommendation, it is printed
+        if len(consideration) > 0:
+            print("You may, also, consider:", consideration[0], consideration[1], consideration[2], '${}'.format(consideration[3]))
