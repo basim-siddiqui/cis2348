@@ -85,6 +85,7 @@ damage_dict = dict(zip(manufacturer_ids, damage_indicator))
 price_dict = dict(zip(price_ids, price_numbers))
 service_dict = dict(zip(service_ids, service_dates))
 
+
  # ~ adds values to the list from dictionaries
 full_inventory_list = []
 for id in range(len(manufacturer_ids)):
@@ -133,11 +134,15 @@ type_items = {}
 for entry in range(len(type_rows)):
     if type_rows[entry][2] not in types:
         type_items[type_rows[entry][2]] = []
-# ~ each item is assigned as a sublist element to its corresponding dictionary key
+# ~ each item is assigned as a sublist element to its corresponding dictionary key, removes the item type element
 for key in type_items:
     for entry in range(len(type_rows)):
         if type_rows[entry][2] == key:
+            del type_rows[entry][2]
             type_items[key].append(type_rows[entry])
+# ~ sorts items by item ID
+for key, value in type_items.items():
+    value.sort()
 # ~ a csv file is created for each item type with items of the same type
 for key, value in type_items.items():
     with open('{}Inventory.csv'.format(key), 'w', newline='') as csv_file:
