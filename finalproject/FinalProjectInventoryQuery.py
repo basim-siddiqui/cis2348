@@ -36,7 +36,7 @@ def item_recommendation(brand, item_type, price, inventory, past_list):
     rec_results = []
     same_type = []
     item_price = copy.deepcopy(price)
-    min = price
+    min = int(price) * int(price)
     for entry in range(len(inventory)):
         if inventory[entry][2] == item_type:
             if inventory[entry][1] != brand:
