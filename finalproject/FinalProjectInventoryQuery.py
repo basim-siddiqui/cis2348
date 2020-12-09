@@ -141,7 +141,6 @@ while search_prompt != 'q':
         for results in range(len(found_items)):
             if int(found_items[results][3]) > int(max_price[3]):
                 max_price = found_items[results]
-
         # ~ outputs the item for the user in this format
         print("Your item is:", max_price[0], max_price[1], max_price[2], '${}'.format(max_price[3]))
         # ~ calls item recommendation function to search for items of the same type from another manufacturer
