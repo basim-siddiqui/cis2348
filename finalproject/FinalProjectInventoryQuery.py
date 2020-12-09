@@ -90,6 +90,7 @@ while search_prompt != 'q':
     if search_prompt == 'q':
         break
 
+
 # ~ splits user's input into individual words and stores it as a list
     search_prompt = search_prompt.split()
     found_items = []
@@ -106,20 +107,43 @@ while search_prompt != 'q':
                         found_items = item_search(values[sublist][1], key, inventory_lists, past_service_lists)
                         break
 
+
+    # ~ section of code runs a loops with conditional statements to make sure the user entered only one manufacturer and item type
+    multiple_item = 0
+    manufacturers = []
+    check_rows = copy.deepcopy(inventory_lists)
+    # ~ appends manufacturers from inventory list
+    for items in check_rows:
+        if items[1] not in manufacturers:
+            manufacturers.append(items[1])
+    # ~ checks if the user entered multiple manufacturers
+    for word in search_prompt:
+        for brands in manufacturers:
+            if word in brands:
+                multiple_item += 1
+    # ~ checks if the user entered multiple item types
+    for key, values in type_items.items():
+        for word in range(len(search_prompt)):
+            if key in search_prompt[word]:
+                multiple_item += 1
+    # ~ if there are more than one manufacturer and item type entered by the user, the found_items list is reset to zero elements
+    if multiple_item > 2:
+        found_items = []
+
+
     # ~ if the user searches for a manufacturer or item type that isn't carried or searches for multiple item types, this statement is made
     if len(found_items) == 0:
         found_items = 'No such item in inventory'
         print(found_items)
-
     # ~ if items are found within the inventory, the loop iterates for each item and finds the most expensive one
     elif len(found_items) > 0:
         max_price = [0, 0, 0, 0, 0, 0]
         for results in range(len(found_items)):
             if int(found_items[results][3]) > int(max_price[3]):
                 max_price = found_items[results]
+
         # ~ outputs the item for the user in this format
         print("Your item is:", max_price[0], max_price[1], max_price[2], '${}'.format(max_price[3]))
-
         # ~ calls item recommendation function to search for items of the same type from another manufacturer
         consideration = item_recommendation(max_price[1], max_price[2], max_price[3], inventory_lists, past_service_lists)
         # ~ if the function returns a list with an item recommendation, it is printed
